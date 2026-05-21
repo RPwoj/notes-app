@@ -1,0 +1,10 @@
+backend/.env.local
+backend/.env.local.php
+backend/.env.*.local
+backend/.env.dev
+backend/config/secrets/prod/prod.decrypt.private.php
+backend/public/bundles/
+backend/var/
+backend/vendor/
+
+mysql_data/
