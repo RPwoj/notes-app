@@ -34,11 +34,18 @@ final class NoteController extends AbstractController
     public function create(Request $request, NoteService $note): JsonResponse
     {
         $data = json_decode($request->getContent());
-        
-        return $this->json([
-            'message' => $note->createNote($data),
-            'path' => 'src/Controller/NoteController.php',
-        ]);
+        $result = $note->createNote($data);
+
+        if ($result['success']) {
+            return $this->json([
+                'id' => $result['id'],
+                'excerpt' => $result['excerpt'],
+            ]);
+        } else {
+            return $this->json([
+                'message' => $result['errors'],
+            ], 400);
+        }
     }
 
     #[Route('/note',  methods: ['PATCH'])]

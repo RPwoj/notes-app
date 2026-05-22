@@ -13,16 +13,16 @@ class Note
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    
     #[ORM\Column(length: 255)]
     private ?string $title = null;
-
+    
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
-
+    
     #[ORM\Column]
     private ?\DateTime $created = null;
-
+    
     #[ORM\Column]
     private ?\DateTime $edited = null;
 
@@ -54,7 +54,7 @@ class Note
 
         return $this;
     }
-
+    
     public function getCreated(): ?\DateTime
     {
         return $this->created;
