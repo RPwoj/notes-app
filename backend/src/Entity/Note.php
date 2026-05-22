@@ -54,6 +54,17 @@ class Note
 
         return $this;
     }
+
+    public function getExcerpt(): ?string
+    {
+       $words = explode(' ', $this->content);
+
+        if (count($words) <= 6) {
+            return $this->content;
+        }
+
+        return implode(' ', array_slice($words, 0, 6)) . '...';
+    }
     
     public function getCreated(): ?\DateTime
     {
