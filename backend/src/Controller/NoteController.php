@@ -50,7 +50,7 @@ final class NoteController extends AbstractController
             ]);
         } else {
             return $this->json([
-                'message' => $result['errors'],
+                'error' => $result['errors'],
             ], 400);
         }
     }
