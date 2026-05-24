@@ -6,28 +6,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Service\NoteService;
 
 
 final class NoteController extends AbstractController
 {
     #[Route('/note',  methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(NoteService $note): JsonResponse
     {
+        $result = $note->getAllNotesData();
+
         return $this->json([
-            'message' => 'get',
-            'path' => 'src/Controller/NoteController.php',
+            'data' => $result,
         ]);
     }
 
     #[Route('/note/{id}',  methods: ['GET'])]
-    public function show(int $id): JsonResponse
+    public function show(int $id, NoteService $note): JsonResponse
     {
-        return $this->json([
-            'message' => 'get' . $id,
-            'path' => 'src/Controller/NoteController.php',
-        ]);
+        $result = $note->getNote($id);
+        
+        if ($result) {
+            return $this->json([
+                'data' => $result,
+            ]);
+        } else {
+            return $this->json([
+                'error' => 'Note with id ' . $id . ' doesnt exists',
+            ], 400);
+        }
     }
 
     #[Route('/note',  methods: ['POST'])]

@@ -19,6 +19,40 @@ class NoteService
         $this->validator = $validator;
     }
 
+    public function getAllNotesData(): ?array
+    {
+        $result = [];
+
+        $notes = $this->entityManager->getRepository(Note::class)->findAll();
+        if (!$notes) return null;
+
+        foreach($notes as $note) {
+            $result[] = [
+                'title' => $note->getTitle(),
+                'excerpt' => $note->getExcerpt(),
+                'content' => $note->getContent(),
+                'created' => $note->getCreated(),
+                'edited' => $note->getEdited()
+            ];
+        }
+
+        return $result;
+    }
+
+    public function getNote($id): ?array
+    {
+        $note = $this->entityManager->getRepository(Note::class)->find($id);
+        if (!$note) return null;
+
+        $data = [];
+        $data['title'] = $note->getTitle();
+        $data['content'] = $note->getContent();
+        $data['created'] = $note->getCreated();
+        $data['edited'] = $note->getEdited();
+
+        return $data;
+    }
+
     public function createNote(object $data)
     {
         $datetime = new DateTime('now', new DateTimeZone('Europe/Warsaw'));
