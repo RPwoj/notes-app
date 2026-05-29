@@ -9,7 +9,7 @@ class NotePostDto
         #[Assert\NotBlank]
         #[Assert\Length(
             min: 2,
-            max: 10,
+            max: 60,
         )]
         public $title,
     ) {

@@ -4,6 +4,7 @@ namespace App\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Note;
 use App\Dto\NotePostDto;
+use App\Dto\NoteUpdateDto;
 use DateTime;
 use DateTimeZone;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -84,7 +85,74 @@ class NoteService
         return [
             'success' => true,
             'id' => $note->getId(),
-            'excerpt' => $note->getExcerpt(),
         ];
+    }
+
+    public function updateNote(int $id, NoteUpdateDto $dto)
+    {
+        $datetime = new DateTime('now', new DateTimeZone('Europe/Warsaw'));
+        $updated = false;
+
+        $note = $this->entityManager->getRepository(Note::class)->find($id);
+        $currentTitle = $note->getTitle();
+        $currentContent = $note->getContent();
+
+        $changedData = [];
+
+        $errors = $this->validator->validate($dto);
+
+        if (count($errors) > 0) {
+            $formattedErrors = [];
+
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error->getMessage();
+            }
+
+            $result = [
+                'success' => false,
+                'errors' => $formattedErrors,
+            ];
+
+            return $result;
+        }
+
+        if ($dto->title) {
+            if ($currentTitle != $dto->title) {
+                $note->setTitle($dto->title);
+                $updated = true;
+                $changedData['title']['from'] = $currentTitle;
+                $changedData['title']['to'] = $dto->title;
+            }
+        }
+            
+        if ($dto->content !== null) {
+            if ($currentContent !== $dto->content) {
+                $note->setContent($dto->content);
+                $updated = true;
+                $changedData['content']['from'] = $currentContent;
+                $changedData['content']['to'] = $dto->content;
+            }
+        }
+
+        if ($updated) {
+            $note->setEdited($datetime);
+            $edited = $note->getEdited($datetime);
+            $this->entityManager->persist($note);
+            $this->entityManager->flush();
+
+            $result = [
+                'success' => true,
+                'message' => 'data changed',
+                'editedTime' => $edited,
+                'changedData' => $changedData
+            ];
+        } else {
+            $result = [
+                'success' => true,
+                'message' => 'no data changed'
+            ];
+        }
+        
+        return $result;
     }
 }

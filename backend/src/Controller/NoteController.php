@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use App\Dto\NoteUpdateDto;
 use App\Service\NoteService;
 
 
@@ -46,7 +47,6 @@ final class NoteController extends AbstractController
         if ($result['success']) {
             return $this->json([
                 'id' => $result['id'],
-                'excerpt' => $result['excerpt'],
             ]);
         } else {
             return $this->json([
@@ -55,13 +55,25 @@ final class NoteController extends AbstractController
         }
     }
 
-    #[Route('/note',  methods: ['PATCH'])]
-    public function update(): JsonResponse
+    #[Route('/note/{id}',  methods: ['PATCH'])]
+    public function update(int $id, Request $request, NoteService $note): JsonResponse
     {
-        return $this->json([
-            'message' => 'patch',
-            'path' => 'src/Controller/NoteController.php',
-        ]);
+        $data = json_decode($request->getContent(), true);
+        
+        $noteUpdateDto = new NoteUpdateDto();
+        $noteUpdateDto->title = (array_key_exists('title', $data)) ? $data['title'] : null;
+        $noteUpdateDto->content = (array_key_exists('content', $data)) ? $data['content'] : null;
+
+        $result = $note->updateNote($id, $noteUpdateDto);
+        $response = [];
+
+        foreach($result as $key => $value) {
+            $response[$key] = $value;
+        }
+
+        return $this->json(
+            $response
+        );
     }
 
     #[Route('/note',  methods: ['DELETE'])]
