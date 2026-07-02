@@ -155,4 +155,24 @@ class NoteService
         
         return $result;
     }
+
+    public function deleteNote(int $id)
+    {
+        $note = $this->entityManager->getRepository(Note::class)->find($id);
+
+        if ($note) {
+            $this->entityManager->remove($note);
+            $this->entityManager->flush();
+            return [
+                'success' => true,
+                'message' => 'Deleted note with id ' . $id
+            ];
+
+        } else {
+            return [
+                'success' => false,
+                'error' => 'No note with id ' . $id
+            ];
+        }
+    }
 }
