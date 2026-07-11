@@ -54,30 +54,14 @@ class NoteService
         return $data;
     }
 
-    public function createNote(object $data)
+    public function createNote(object $dto)
     {
         $datetime = new DateTime('now', new DateTimeZone('Europe/Warsaw'));
         $note = new Note();
-        $note->setTitle($data->title);
-        $note->setContent($data->content);
+        $note->setTitle($dto->title);   
+        $note->setContent($dto->content);
         $note->setCreated($datetime);
         $note->setEdited($datetime);
-
-        $dto = new NotePostDto($note->getTitle(), $note->getCreated());
-        $errors = $this->validator->validate($dto);
-
-        if (count($errors) > 0) {
-            $formattedErrors = [];
-
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error->getMessage();
-            }
-
-            return [
-                'success' => false,
-                'errors' => $formattedErrors,
-            ];
-        }
 
         $this->entityManager->persist($note);
         $this->entityManager->flush();

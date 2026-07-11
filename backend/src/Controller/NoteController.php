@@ -8,6 +8,11 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Dto\NoteUpdateDto;
 use App\Service\NoteService;
+use DateTime;
+use DateTimeZone;
+use App\Entity\Note;
+use App\Dto\NotePostDto;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 final class NoteController extends AbstractController
@@ -39,20 +44,44 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/note',  methods: ['POST'])]
-    public function create(Request $request, NoteService $note): JsonResponse
+    public function create(Request $request, NoteService $noteService, ValidatorInterface $validator): JsonResponse
     {
-        $data = json_decode($request->getContent());
-        $result = $note->createNote($data);
+        $data = json_decode($request->getContent(), true);
 
-        if ($result['success']) {
+        if (!is_array($data)) {
             return $this->json([
-                'id' => $result['id'],
-            ]);
-        } else {
-            return $this->json([
-                'error' => $result['errors'],
+                'error' => 'Invalid JSON.',
             ], 400);
         }
+
+        $dto = new NotePostDto();
+        $dto->title = $data['title'] ?? null;
+        $dto->content = $data['content'] ?? null;
+        $errors = $validator->validate($dto);
+
+        if (count($errors) > 0) {
+            $formattedErrors = [];
+
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error->getMessage();
+            }
+
+            return $this->json([
+                'error' => $formattedErrors,
+            ], 400);
+        }
+
+        $result = $noteService->createNote($dto);
+        
+        if (!$result) {
+            return $this->json([
+                'error' => 'Unable to create note.',
+            ], 500);
+        }
+
+        return $this->json([
+            'id' => $result['id'],
+        ], 201);
     }
 
     #[Route('/note/{id}',  methods: ['PATCH'])]
