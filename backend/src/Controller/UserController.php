@@ -7,20 +7,39 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Dto\UserPostDto;
+use App\Service\UserService;
 
 final class UserController extends AbstractController
 {
-    #[Route('/user', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        $user = new User();
-        $user->setEmail($data['email']);
-        $user->setPassword($data['password']);
-        $entityManager->persist($user);
-        $entityManager->flush();
+    public function __construct(
+        private ValidatorInterface $validator,
+        private UserService $userService
+    ) {
+    }
 
-        return $this->json($user->getId());
+    #[Route('/user', methods: ['POST'])]
+    public function create(Request $request): JsonResponse
+    {
+        $requestData = json_decode($request->getContent(), true);
+        $dto = new UserPostDto();
+        $dto->password = $requestData['password'] ?? null;
+        $dto->email = $requestData['email'] ?? null;
+
+        $errors = $this->validator->validate($dto);
+        $errorsArray = [];
+        
+        if (count($errors) > 0) {
+            foreach($errors as $error) {
+                $errorsArray[] = $error->getMessage();
+            }
+
+            return $this->json(['errors' => $errorsArray], 400);
+        }
+    
+        $data = $this->userService->createUser($dto);
+
+        return new JsonResponse($data);
     }
 }
