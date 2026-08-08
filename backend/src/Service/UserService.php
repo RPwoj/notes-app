@@ -3,11 +3,15 @@ namespace App\Service;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 class UserService
 {
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private UserPasswordHasherInterface $passwordHasher
+    )
     {
     }
     
@@ -23,7 +27,12 @@ class UserService
 
         $user = new User();
         $user->setEmail($dto->email);
-        $user->setPassword($dto->password);
+        $hashedPassword = $this->passwordHasher->hashPassword(
+            $user,
+            $dto->password
+        );
+        $user->setPassword($hashedPassword);
+
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
