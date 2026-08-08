@@ -1,5 +1,0 @@
-{
-    "require": {
-        "symfony/password-hasher": "^7.4"
-    }
-}
