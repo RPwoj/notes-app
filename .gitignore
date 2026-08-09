@@ -6,5 +6,11 @@ backend/config/secrets/prod/prod.decrypt.private.php
 backend/public/bundles/
 backend/var/
 backend/vendor/
+/backend/.todo
 
 mysql_data/
+
+
+###> lexik/jwt-authentication-bundle ###
+backend/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

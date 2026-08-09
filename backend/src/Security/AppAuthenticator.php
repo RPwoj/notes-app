@@ -4,13 +4,21 @@ namespace App\Security;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class AppAuthenticator extends AbstractAuthenticator
 {
+    public function __construct(private JWTTokenManagerInterface $jwtManager)
+    {
+    }
     public function supports(Request $request): ?bool
     {
         return $request->isMethod('POST') && $request->getPathInfo() === '/login';
@@ -18,17 +26,36 @@ class AppAuthenticator extends AbstractAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        // TODO: Implement authenticate() method.
+        $data = json_decode($request->getContent(), true);
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
+
+        error_log('AppAuthenticator::authenticate() called');
+
+        return new Passport(
+            new UserBadge($email),
+            new PasswordCredentials($password),
+            [
+                new RememberMeBadge(),
+            ]
+        );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // TODO: Implement onAuthenticationSuccess() method.
+        error_log('logged in');
+        $user = $token->getUser();
+
+        return new JsonResponse(['token' => $this->jwtManager->create($user)]);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        // TODO: Implement onAuthenticationFailure() method.
+                // TODO: Implement onAuthenticationFailure() method.
+        error_log('AppAuthenticator::authenticate() failed');
+
+        return new Response('Authentication failed', Response::HTTP_UNAUTHORIZED);
+
     }
 
     //    public function start(Request $request, ?AuthenticationException $authException = null): Response
