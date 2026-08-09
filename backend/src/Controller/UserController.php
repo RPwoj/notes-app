@@ -22,7 +22,7 @@ final class UserController extends AbstractController
     ) {
     }
 
-    #[Route('/user', methods: ['POST'])]
+    #[Route('/register', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
         $requestData = json_decode($request->getContent(), true);
@@ -43,7 +43,31 @@ final class UserController extends AbstractController
     
         $data = $this->userService->createUser($dto);
 
-        return new JsonResponse($data);
+        return new JsonResponse($data); 
+    }
+
+    #[Route('/confirm', methods: ['POST'])]
+    public function confirm(Request $request): JsonResponse
+    {
+        $token = $request->query->get('token');
+
+        if (!$token) {
+            return $this->json([
+                'error' => 'Token is required.',
+            ], 400);
+        }
+
+        $result = $this->userService->confirmUser($token);
+
+        if ($result['success']) {
+            return $this->json([
+                'message' => 'User confirmed successfully.',
+            ]);
+        } else {
+            return $this->json([
+                'error' => $result['message'],
+            ], 400);
+        }
     }
 
     #[Route('/login', methods: ['POST'])]

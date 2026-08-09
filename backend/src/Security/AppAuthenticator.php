@@ -45,7 +45,9 @@ class AppAuthenticator extends AbstractAuthenticator
     {
         error_log('logged in');
         $user = $token->getUser();
-
+        if ($user->getIsConfirmed() === false) {
+            return new JsonResponse(['error' => 'User account is not confirmed.'], Response::HTTP_FORBIDDEN);
+        }
         return new JsonResponse(['token' => $this->jwtManager->create($user)]);
     }
 

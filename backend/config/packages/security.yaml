@@ -18,7 +18,7 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
-            
+
         # main:
         #     lazy: true
         #     provider: app_user_provider
@@ -41,6 +41,8 @@ security:
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/login$, roles: PUBLIC_ACCESS  }
+        - { path: ^/register$, roles: PUBLIC_ACCESS  }
+        - { path: ^/confirm$, roles: PUBLIC_ACCESS  }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

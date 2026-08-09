@@ -32,6 +32,9 @@ class UserService
             $dto->password
         );
         $user->setPassword($hashedPassword);
+        $user->setIsConfirmed(false);
+        $confirmationToken = bin2hex(random_bytes(32));
+        $user->setConfirmationToken($confirmationToken);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -45,6 +48,28 @@ class UserService
         return [
             'id' => $user->getId(),
             'message' => 'User ' . $user->getEmail() . ' created successfully.',
+        ];
+    }
+
+    public function confirmUser(?string $token): array
+    {
+        $userRepository = $this->entityManager->getRepository(User::class);
+        $user = $userRepository->findOneBy(['confirmationToken' => $token]);
+
+        if (!$user) {
+            return [
+                'success' => false,
+                'message' => 'Invalid confirmation token.',
+            ];
+        }
+
+        $user->setIsConfirmed(true);
+        $user->setConfirmationToken(null);
+        $this->entityManager->flush();
+
+        return [
+            'success' => true,
+            'message' => 'User confirmed successfully.',
         ];
     }
 }
