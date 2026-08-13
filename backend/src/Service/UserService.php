@@ -47,7 +47,9 @@ class UserService
 
         return [
             'id' => $user->getId(),
-            'message' => 'User ' . $user->getEmail() . ' created successfully.',
+            'email' => $user->getEmail(),
+            'confirmationToken' => $user->getConfirmationToken(),
+            'message' => 'User ' . $user->getEmail() . ' created successfully.'
         ];
     }
 
@@ -59,7 +61,7 @@ class UserService
         if (!$user) {
             return [
                 'success' => false,
-                'message' => 'Invalid confirmation token.',
+                'message' => 'Invalid confirmation token.'
             ];
         }
 
@@ -69,7 +71,7 @@ class UserService
 
         return [
             'success' => true,
-            'message' => 'User confirmed successfully.',
+            'message' => 'User confirmed successfully.'
         ];
     }
 }

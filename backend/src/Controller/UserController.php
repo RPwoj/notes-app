@@ -11,6 +11,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Dto\UserPostDto;
 use App\Repository\UserRepository;
 use App\Service\UserService;
+use App\Service\EmailService;
+use App\Entity\User as UserEntity;
 
 final class UserController extends AbstractController
 {
@@ -18,7 +20,8 @@ final class UserController extends AbstractController
         private ValidatorInterface $validator,
         private UserService $userService,
         private UserRepository $userRepository,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
+        private EmailService $emailService
     ) {
     }
 
@@ -43,10 +46,16 @@ final class UserController extends AbstractController
     
         $data = $this->userService->createUser($dto);
 
+        $this->emailService->sendEmail(
+            $dto->email,
+            'Confirm your account',
+            'Please click the following link to confirm your account: <a href="http://notes.local/confirm?token=' . $data['confirmationToken'] . '">Confirm Account</a>'
+        );
+
         return new JsonResponse($data); 
     }
 
-    #[Route('/confirm', methods: ['POST'])]
+    #[Route('/confirm', methods: ['GET'])]
     public function confirm(Request $request): JsonResponse
     {
         $token = $request->query->get('token');
@@ -73,27 +82,6 @@ final class UserController extends AbstractController
     #[Route('/login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
-        // $requestData = json_decode($request->getContent(), true);
-        // $email = $requestData['email'] ?? null;
-        // $password = $requestData['password'] ?? null;
-
-        // if (!$email || !$password) {
-        //     return $this->json([
-        //         'error' => 'Email and password are required.',
-        //     ], 400);
-        // }
-
-        // $user = $this->userRepository->findOneBy(['email' => $email]);
-
-        // if (!$user || !$this->passwordHasher->isPasswordValid($user, $password)) {
-        //     return $this->json([
-        //         'error' => 'Invalid credentials.',
-        //     ], 401);
-        // }
-
-        // return $this->json([
-        //     'message' => 'Login successful.',
-        //     'userId' => $user->getId(),
-        // ]);
     }
+
 }

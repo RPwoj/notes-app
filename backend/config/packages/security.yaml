@@ -43,6 +43,8 @@ security:
         - { path: ^/login$, roles: PUBLIC_ACCESS  }
         - { path: ^/register$, roles: PUBLIC_ACCESS  }
         - { path: ^/confirm$, roles: PUBLIC_ACCESS  }
+        # uncomment before production
+        - { path: ^/mail$, roles: PUBLIC_ACCESS  }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
