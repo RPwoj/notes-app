@@ -74,4 +74,22 @@ class UserService
             'message' => 'User confirmed successfully.'
         ];
     }
+
+    public function deleteUser(?User $user): array
+    {
+        if (!$user) {
+            return [
+                'success' => false,
+                'message' => 'User not authenticated.'
+            ];
+        }
+
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+
+        return [
+            'success' => true,
+            'message' => 'User ' . $user->getEmail() . ' deleted successfully.'
+        ];
+    }
 }
