@@ -105,6 +105,39 @@ final class NoteController extends AbstractController
         );
     }
 
+    #[Route('/note/{id}/favorite',  methods: ['PATCH'])]
+    public function favorite(int $id, Request $request, NoteService $noteService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!is_array($data)) {
+            return $this->json([
+                'error' => 'Invalid JSON.',
+            ], 400);
+        }
+
+        if (array_key_exists('favorite', $data) && !is_bool($data['favorite'])) {
+            return $this->json([
+                'error' => 'Field favorite must be a boolean.',
+            ], 400);
+        }
+
+        $favorite = $data['favorite'] ?? null;
+        $result = $noteService->favoriteNote($id, $favorite);
+
+        if ($result['success']) {
+            return $this->json([
+                'success' => true,
+                'id' => $result['id'],
+                'favorite' => $result['favorite'],
+            ]);
+        }
+
+        return $this->json([
+            'error' => $result['error'],
+        ], 400);
+    }
+
     #[Route('/note/{id}',  methods: ['DELETE'])]
     public function delete(int $id, NoteService $noteService): JsonResponse
     {

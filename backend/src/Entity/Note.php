@@ -26,6 +26,9 @@ class Note
     #[ORM\Column]
     private ?\DateTime $edited = null;
 
+    #[ORM\Column]
+    private bool $favorite = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +89,18 @@ class Note
     public function setEdited(\DateTime $edited): static
     {
         $this->edited = $edited;
+
+        return $this;
+    }
+
+    public function isFavorite(): bool
+    {
+        return $this->favorite;
+    }
+
+    public function setFavorite(bool $favorite): static
+    {
+        $this->favorite = $favorite;
 
         return $this;
     }

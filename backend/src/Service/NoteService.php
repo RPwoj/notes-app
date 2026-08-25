@@ -33,7 +33,8 @@ class NoteService
                 'excerpt' => $note->getExcerpt(),
                 'content' => $note->getContent(),
                 'created' => $note->getCreated(),
-                'edited' => $note->getEdited()
+                'edited' => $note->getEdited(),
+                'favorite' => $note->isFavorite(),
             ];
         }
 
@@ -50,6 +51,7 @@ class NoteService
         $data['content'] = $note->getContent();
         $data['created'] = $note->getCreated();
         $data['edited'] = $note->getEdited();
+        $data['favorite'] = $note->isFavorite();
 
         return $data;
     }
@@ -138,6 +140,30 @@ class NoteService
         }
         
         return $result;
+    }
+
+    public function favoriteNote(int $id, ?bool $favorite = null): array
+    {
+        $note = $this->entityManager->getRepository(Note::class)->find($id);
+
+        if (!$note) {
+            return [
+                'success' => false,
+                'error' => 'No note with id ' . $id,
+            ];
+        }
+
+        $newFavorite = $favorite === null ? !$note->isFavorite() : $favorite;
+        $note->setFavorite($newFavorite);
+
+        $this->entityManager->persist($note);
+        $this->entityManager->flush();
+
+        return [
+            'success' => true,
+            'id' => $id,
+            'favorite' => $note->isFavorite(),
+        ];
     }
 
     public function deleteNote(int $id)
