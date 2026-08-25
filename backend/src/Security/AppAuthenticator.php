@@ -30,8 +30,6 @@ class AppAuthenticator extends AbstractAuthenticator
         $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
 
-        error_log('AppAuthenticator::authenticate() called');
-
         return new Passport(
             new UserBadge($email),
             new PasswordCredentials($password),
@@ -43,7 +41,6 @@ class AppAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        error_log('logged in');
         $user = $token->getUser();
         if ($user->getIsConfirmed() === false) {
             return new JsonResponse(['error' => 'User account is not confirmed.'], Response::HTTP_FORBIDDEN);
@@ -53,9 +50,6 @@ class AppAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-                // TODO: Implement onAuthenticationFailure() method.
-        error_log('AppAuthenticator::authenticate() failed');
-
         return new Response('Authentication failed', Response::HTTP_UNAUTHORIZED);
 
     }

@@ -29,6 +29,10 @@ class Note
     #[ORM\Column]
     private bool $favorite = false;
 
+    #[ORM\ManyToOne(targetEntity: "App\Entity\User", inversedBy: "notes")]
+    #[ORM\JoinColumn(name: "owner_id", referencedColumnName: "id", nullable: false)]
+    private ?User $owner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -101,6 +105,18 @@ class Note
     public function setFavorite(bool $favorite): static
     {
         $this->favorite = $favorite;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

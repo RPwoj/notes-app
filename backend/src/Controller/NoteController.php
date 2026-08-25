@@ -13,7 +13,7 @@ use DateTimeZone;
 use App\Entity\Note;
 use App\Dto\NotePostDto;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
+use App\Security\NoteVoter;
 
 final class NoteController extends AbstractController
 {
@@ -31,10 +31,18 @@ final class NoteController extends AbstractController
     public function show(int $id, NoteService $note): JsonResponse
     {
         $result = $note->getNote($id);
+
+        $this->denyAccessUnlessGranted('view', $result);
         
         if ($result) {
-            return $this->json([
-                'data' => $result,
+           return $this->json([
+                'data' => [
+                    'title' => $result->getTitle(),
+                    'content' => $result->getContent(),
+                    'created' => $result->getCreated(),
+                    'edited' => $result->getEdited(),
+                    'favorite' => $result->isFavorite(),
+                ],
             ]);
         } else {
             return $this->json([
@@ -47,6 +55,7 @@ final class NoteController extends AbstractController
     public function create(Request $request, NoteService $noteService, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+        $user = $this->getUser();
 
         if (!is_array($data)) {
             return $this->json([
@@ -71,7 +80,7 @@ final class NoteController extends AbstractController
             ], 400);
         }
 
-        $result = $noteService->createNote($dto);
+        $result = $noteService->createNote($user, $dto);
         
         if (!$result) {
             return $this->json([

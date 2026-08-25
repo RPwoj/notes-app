@@ -8,6 +8,7 @@ use App\Dto\NoteUpdateDto;
 use DateTime;
 use DateTimeZone;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Entity\User;
 
 class NoteService
 {
@@ -41,22 +42,12 @@ class NoteService
         return $result;
     }
 
-    public function getNote($id): ?array
+    public function getNote(int $id): ?Note
     {
-        $note = $this->entityManager->getRepository(Note::class)->find($id);
-        if (!$note) return null;
-
-        $data = [];
-        $data['title'] = $note->getTitle();
-        $data['content'] = $note->getContent();
-        $data['created'] = $note->getCreated();
-        $data['edited'] = $note->getEdited();
-        $data['favorite'] = $note->isFavorite();
-
-        return $data;
+        return $this->entityManager->getRepository(Note::class)->find($id);
     }
 
-    public function createNote(object $dto)
+    public function createNote(User $user, NotePostDto $dto)
     {
         $datetime = new DateTime('now', new DateTimeZone('Europe/Warsaw'));
         $note = new Note();
@@ -64,6 +55,7 @@ class NoteService
         $note->setContent($dto->content);
         $note->setCreated($datetime);
         $note->setEdited($datetime);
+        $note->setOwner($user);
 
         $this->entityManager->persist($note);
         $this->entityManager->flush();
