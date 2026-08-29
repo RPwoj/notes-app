@@ -150,16 +150,26 @@ final class NoteController extends AbstractController
     #[Route('/note/{id}',  methods: ['DELETE'])]
     public function delete(int $id, NoteService $noteService): JsonResponse
     {
-        $result = $noteService->deleteNote($id);
+        $note = $noteService->getNote($id);
 
-        if ($result['success']) {
+        if(!$note) {
             return $this->json([
-                'message' => $result['message'],
-            ]);
+                'error' => 'Note not found.',
+            ], 404);
+        }
+
+        $this->denyAccessUnlessGranted('delete', $note);
+
+        $result = $noteService->deleteNote($note);
+
+        if ($result) {
+            return $this->json([
+                'message' => 'Note (id=' . $id . '), succesfully deleted.'
+            ], 200);
         } else {
             return $this->json([
-                'error' => $result['error'],
-            ], 400);
+                'error' => 'Operation delete failed.'
+            ], 500);
         }
     }
 }

@@ -4,16 +4,17 @@ namespace App\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use App\Entity\Note;
-use App\ENtity\User;
+use App\Entity\User;
 
 class NoteVoter extends Voter
 {
     public const VIEW = 'view';
     public const EDIT = 'edit';
-
+    public const DELETE = 'delete';
+    
     public function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::VIEW, self::EDIT]) && $subject instanceof Note;
+        return in_array($attribute, [self::VIEW, self::EDIT, self::DELETE]) && $subject instanceof Note;
     }
         
     public function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
@@ -32,6 +33,8 @@ class NoteVoter extends Voter
                 return $this->canView($note, $user);
             case self::EDIT:
                 return $this->canEdit($note, $user);
+            case self::DELETE:
+                    return $this->canDelete($note, $user);
         }
 
         throw new \LogicException('This code should not be reached!');
@@ -47,6 +50,15 @@ class NoteVoter extends Voter
     }
 
     private function canEdit(Note $note, User $user): bool
+    {
+        if ($note->getOwner() === $user) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function canDelete(Note $note, User $user): bool
     {
         if ($note->getOwner() === $user) {
             return true;
