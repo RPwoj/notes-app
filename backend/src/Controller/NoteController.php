@@ -97,20 +97,46 @@ final class NoteController extends AbstractController
     public function update(int $id, Request $request, NoteService $noteService): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+
+        if (!is_array($data)) {
+            return $this->json([
+                'error' => 'Invalid JSON.',
+            ], 400);
+        }
+
+        $note = $noteService->getNote($id);
+        if(!$note) {
+            return $this->json([
+                'error' => 'Note not found.',
+            ], 404);
+        }
+
+        $this->denyAccessUnlessGranted('edit', $note);
         
         $noteUpdateDto = new NoteUpdateDto();
         $noteUpdateDto->title = (array_key_exists('title', $data)) ? $data['title'] : null;
         $noteUpdateDto->content = (array_key_exists('content', $data)) ? $data['content'] : null;
 
-        $result = $noteService->updateNote($id, $noteUpdateDto);
-        $response = [];
+        $result = $noteService->updateNote($note, $noteUpdateDto);
+        
+        if (!$result) {
+            return $this->json([
+                'error' => 'Unable to update note.',
+            ], 500);
+        }
 
-        foreach($result as $key => $value) {
-            $response[$key] = $value;
+        if (is_array($result) && isset($result['success']) && $result['success'] === false) {
+            return $this->json([
+                'error' => $result['errors'],
+            ], 400);
+        } elseif ($result instanceof Note) {
+            return $this->json([
+                'message' => 'Note updated successfully.',
+            ]);
         }
 
         return $this->json(
-            $response
+            $result
         );
     }
 
@@ -143,7 +169,7 @@ final class NoteController extends AbstractController
         }
 
         return $this->json([
-            'error' => $result['error'],
+            'error' => $result['errors'],
         ], 400);
     }
 

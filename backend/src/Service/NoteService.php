@@ -66,12 +66,11 @@ class NoteService
         ];
     }
 
-    public function updateNote(int $id, NoteUpdateDto $dto)
+    public function updateNote(Note $note, NoteUpdateDto $dto)
     {
         $datetime = new DateTime('now', new DateTimeZone('Europe/Warsaw'));
         $updated = false;
 
-        $note = $this->entityManager->getRepository(Note::class)->find($id);
         $currentTitle = $note->getTitle();
         $currentContent = $note->getContent();
 
@@ -94,7 +93,7 @@ class NoteService
             return $result;
         }
 
-        if ($dto->title) {
+        if ($dto->title !== null) {
             if ($currentTitle != $dto->title) {
                 $note->setTitle($dto->title);
                 $updated = true;
@@ -114,24 +113,17 @@ class NoteService
 
         if ($updated) {
             $note->setEdited($datetime);
-            $edited = $note->getEdited($datetime);
             $this->entityManager->persist($note);
             $this->entityManager->flush();
-
-            $result = [
-                'success' => true,
-                'message' => 'data changed',
-                'editedTime' => $edited,
-                'changedData' => $changedData
-            ];
-        } else {
-            $result = [
-                'success' => true,
-                'message' => 'no data changed'
+            return $note;
+        } elseif (!$updated && empty($changedData)) {
+            return [
+                'success' => false,
+                'message' => 'No changes were made to the note.',
             ];
         }
         
-        return $result;
+        return false;
     }
 
     public function favoriteNote(int $id, ?bool $favorite = null): array
