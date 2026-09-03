@@ -18,9 +18,9 @@ use App\Security\NoteVoter;
 final class NoteController extends AbstractController
 {
     #[Route('/note',  methods: ['GET'])]
-    public function index(NoteService $note): JsonResponse
+    public function index(NoteService $noteService): JsonResponse
     {
-        $result = $note->getAllNotesData();
+        $result = $noteService->getAllNotesData();
 
         return $this->json([
             'data' => $result,
@@ -28,9 +28,9 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/note/{id}',  methods: ['GET'])]
-    public function show(int $id, NoteService $note): JsonResponse
+    public function show(int $id, NoteService $noteService): JsonResponse
     {
-        $result = $note->getNote($id);
+        $result = $noteService->getNote($id);
 
         $this->denyAccessUnlessGranted('view', $result);
         
@@ -94,7 +94,7 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/note/{id}',  methods: ['PATCH'])]
-    public function update(int $id, Request $request, NoteService $note): JsonResponse
+    public function update(int $id, Request $request, NoteService $noteService): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         
@@ -102,7 +102,7 @@ final class NoteController extends AbstractController
         $noteUpdateDto->title = (array_key_exists('title', $data)) ? $data['title'] : null;
         $noteUpdateDto->content = (array_key_exists('content', $data)) ? $data['content'] : null;
 
-        $result = $note->updateNote($id, $noteUpdateDto);
+        $result = $noteService->updateNote($id, $noteUpdateDto);
         $response = [];
 
         foreach($result as $key => $value) {
