@@ -20,7 +20,8 @@ final class NoteController extends AbstractController
     #[Route('/note',  methods: ['GET'])]
     public function index(NoteService $noteService): JsonResponse
     {
-        $result = $noteService->getAllNotesData();
+        $user = $this->getUser();
+        $result = $noteService->getAllNotesData($user);
 
         return $this->json([
             'data' => $result,

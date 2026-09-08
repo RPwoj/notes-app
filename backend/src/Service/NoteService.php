@@ -21,11 +21,12 @@ class NoteService
         $this->validator = $validator;
     }
 
-    public function getAllNotesData(): ?array
+    public function getAllNotesData(User $user): ?array
     {
         $result = [];
 
-        $notes = $this->entityManager->getRepository(Note::class)->findAll();
+        $notes = $this->entityManager->getRepository(Note::class)->findBy(['owner' => $user]);
+
         if (!$notes) return null;
 
         foreach($notes as $note) {
@@ -36,6 +37,7 @@ class NoteService
                 'created' => $note->getCreated(),
                 'edited' => $note->getEdited(),
                 'favorite' => $note->isFavorite(),
+                'owner' => $note->getOwner()->getEmail(),
             ];
         }
 
