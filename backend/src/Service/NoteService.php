@@ -126,14 +126,12 @@ class NoteService
         return false;
     }
 
-    public function favoriteNote(int $id, ?bool $favorite = null): array
+    public function favoriteNote(Note $note, ?bool $favorite = null): array
     {
-        $note = $this->entityManager->getRepository(Note::class)->find($id);
-
         if (!$note) {
             return [
                 'success' => false,
-                'error' => 'No note with id ' . $id,
+                'error' => 'Note not found.'
             ];
         }
 
@@ -145,7 +143,6 @@ class NoteService
 
         return [
             'success' => true,
-            'id' => $id,
             'favorite' => $note->isFavorite(),
         ];
     }
