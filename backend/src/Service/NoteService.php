@@ -119,7 +119,7 @@ class NoteService
         } elseif (!$updated && empty($changedData)) {
             return [
                 'success' => false,
-                'message' => 'No changes were made to the note.',
+                'errors' => 'No changes were made to the note.',
             ];
         }
         
