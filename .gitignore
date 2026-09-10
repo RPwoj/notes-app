@@ -9,7 +9,7 @@ backend/vendor/
 /backend/.todo
 
 mysql_data/
-
+.env.local
 
 ###> lexik/jwt-authentication-bundle ###
 backend/config/jwt/*.pem
