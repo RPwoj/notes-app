@@ -21,7 +21,7 @@ class NoteService
         $this->validator = $validator;
     }
 
-    public function getAllNotesData(User $user): ?array
+    public function getNotes(User $user): ?array
     {
         $result = [];
 

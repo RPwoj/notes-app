@@ -21,7 +21,7 @@ final class NoteController extends AbstractController
     public function index(NoteService $noteService): JsonResponse
     {
         $user = $this->getUser();
-        $result = $noteService->getAllNotesData($user);
+        $result = $noteService->getNotes($user);
 
         return $this->json([
             'data' => $result,
