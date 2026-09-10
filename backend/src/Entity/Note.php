@@ -20,17 +20,17 @@ class Note
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
     
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTime $created = null;
     
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTime $edited = null;
 
     #[ORM\Column]
     private bool $favorite = false;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\User", inversedBy: "notes")]
-    #[ORM\JoinColumn(name: "owner_id", referencedColumnName: "id", nullable: false)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'notes')]
+    #[ORM\JoinColumn(name: 'owner_id', referencedColumnName: 'id', nullable: false)]
     private ?User $owner = null;
 
     public function getId(): ?int
