@@ -2,7 +2,14 @@ import { useState } from 'react'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
+import TaskList from './components/TaskList.jsx'
 import './App.css'
+
+const exampleTasks = [
+  { id: 1, name: 'Plan the next feature', content: 'Write down the first implementation steps.' },
+  { id: 2, name: 'Review the notes', content: 'Check the latest updates and open questions.' },
+  { id: 3, name: 'Ship the change', content: 'Run the checks and prepare the release.' },
+]
 
 function App() {
   const [count, setCount] = useState(0)
@@ -14,6 +21,7 @@ function App() {
           <img src={heroImg} className="base" width="170" height="179" alt="" />
           <img src={reactLogo} className="framework" alt="React logo" />
           <img src={viteLogo} className="vite" alt="Vite logo" />
+          <TaskList items={exampleTasks} />
         </div>
         <div>
           <h1>Get started</h1>
