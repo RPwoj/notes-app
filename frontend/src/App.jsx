@@ -3,6 +3,7 @@ import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import TaskList from './components/TaskList.jsx'
+import { login } from './api/user.js'
 import './App.css'
 
 const exampleTasks = [
@@ -17,6 +18,9 @@ function App() {
   return (
     <>
       <section id="center">
+        <button className="login-button" onClick={() => login('test120@test.pl', 'test')}>
+          Login
+        </button>
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
           <img src={reactLogo} className="framework" alt="React logo" />

@@ -13,6 +13,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class AppAuthenticator extends AbstractAuthenticator
 {
@@ -45,7 +46,20 @@ class AppAuthenticator extends AbstractAuthenticator
         if ($user->getIsConfirmed() === false) {
             return new JsonResponse(['error' => 'User account is not confirmed.'], Response::HTTP_FORBIDDEN);
         }
-        return new JsonResponse(['token' => $this->jwtManager->create($user)]);
+        $jwt = $this->jwtManager->create($user);
+
+        $response = new JsonResponse(['message' => 'Logged in']);
+        $response->headers->setCookie(
+            Cookie::create('AUTH_TOKEN')
+                ->withValue($jwt)
+                ->withExpires(new \DateTimeImmutable('+1 hour'))
+                ->withPath('/')
+                ->withSecure(true)
+                ->withHttpOnly(true)
+                ->withSameSite(Cookie::SAMESITE_LAX)
+        );
+
+        return $response;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
