@@ -14,6 +14,5 @@ export async function login(username, password) {
     if (!response.ok) {
         throw new Error(data.message || 'Login failed')
     }
-    console.log('Login successful:', data);
     return data
 }
