@@ -97,6 +97,24 @@ final class UserController extends AbstractController
         return $this->json(['error' => $result['message'] ?? 'Unable to delete user.'], 400);
     }
 
+    #[Route('/check-login', methods: ['GET'])]
+    public function checkLogin(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof UserEntity) {
+            return $this->json(['authenticated' => false], 401);
+        }
+
+        return $this->json([
+            'authenticated' => true,
+            'user' => [
+                'id' => $user->getId(),
+                'email' => $user->getUserIdentifier(),
+            ],
+        ]);
+    }
+
     #[Route('/login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
