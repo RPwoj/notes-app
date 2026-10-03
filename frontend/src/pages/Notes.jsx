@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import NotesList from '../components/NotesList.jsx'
+import { checkIfUserIsLoggedIn } from '../api/user.js'
 
 const exampleNotes = [
   { id: 1, name: 'Plan the next feature', content: 'Write down the first implementation steps.' },
@@ -7,6 +9,30 @@ const exampleNotes = [
 ]
 
 export default function Notes() {
+  const [isCheckingLogin, setIsCheckingLogin] = useState(true)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    checkIfUserIsLoggedIn()
+      .then((response) => {
+        setIsLoggedIn(response.authenticated)
+        setIsCheckingLogin(false)
+
+        if (!response.authenticated) {
+        //   window.location.href = '/login'
+        console.log('User is not logged in, redirecting to login page')
+        }
+      })
+      .catch(() => {
+        console.error('Error checking login status')
+        // window.location.href = '/login'
+      })
+  }, [])
+
+  if (isCheckingLogin || !isLoggedIn) {
+    return null
+  }
+
   return (
     <main>
       <h1>Notes</h1>

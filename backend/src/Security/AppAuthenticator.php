@@ -13,8 +13,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\HttpFoundation\Cookie;
-
 class AppAuthenticator extends AbstractAuthenticator
 {
     public function __construct(private JWTTokenManagerInterface $jwtManager)
@@ -48,18 +46,14 @@ class AppAuthenticator extends AbstractAuthenticator
         }
         $jwt = $this->jwtManager->create($user);
 
-        $response = new JsonResponse(['message' => 'Logged in']);
-        $response->headers->setCookie(
-            Cookie::create('AUTH_TOKEN')
-                ->withValue($jwt)
-                ->withExpires(new \DateTimeImmutable('+1 hour'))
-                ->withPath('/')
-                ->withSecure(true)
-                ->withHttpOnly(true)
-                ->withSameSite(Cookie::SAMESITE_LAX)
-        );
-
-        return $response;
+        // rw_todo - before production, set secure to true and sameSite to strict
+        return new JsonResponse([
+            'message' => 'Logged in',
+            'token' => $jwt,
+            'user' => [
+                'email' => $user->getUserIdentifier(),
+            ],
+        ]);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
