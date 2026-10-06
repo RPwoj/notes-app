@@ -28,24 +28,3 @@ export async function login(username, password) {
 
     return data
 }
-
-export async function checkIfUserIsLoggedIn() {
-    const token = getStoredToken()
-
-    const response = await fetch('http://notes.local/check-login', {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-        throw new Error(data.message || 'Failed to check login status')
-    }
-
-    return data
-}

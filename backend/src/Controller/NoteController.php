@@ -23,9 +23,9 @@ final class NoteController extends AbstractController
         $user = $this->getUser();
         $result = $noteService->getNotes($user);
 
-        return $this->json([
-            'data' => $result,
-        ]);
+        return $this->json(
+            $result,
+        );
     }
 
     #[Route('/note/{id}',  methods: ['GET'])]

@@ -31,6 +31,7 @@ class NoteService
 
         foreach($notes as $note) {
             $result[] = [
+                'id' => $note->getId(),
                 'title' => $note->getTitle(),
                 'excerpt' => $note->getExcerpt(),
                 'content' => $note->getContent(),

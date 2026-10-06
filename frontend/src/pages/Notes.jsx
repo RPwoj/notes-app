@@ -1,42 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import NotesList from '../components/NotesList.jsx'
-import { checkIfUserIsLoggedIn } from '../api/user.js'
-
-const exampleNotes = [
-  { id: 1, name: 'Plan the next feature', content: 'Write down the first implementation steps.' },
-  { id: 2, name: 'Review the notes', content: 'Check the latest updates and open questions.' },
-  { id: 3, name: 'Ship the change', content: 'Run the checks and prepare the release.' },
-]
+import { getAllUserNotes } from '../api/note.js'
 
 export default function Notes() {
-  const [isCheckingLogin, setIsCheckingLogin] = useState(true)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [notes, setNotes] = useState([]);
 
   useEffect(() => {
-    checkIfUserIsLoggedIn()
-      .then((response) => {
-        setIsLoggedIn(response.authenticated)
-        setIsCheckingLogin(false)
-
-        if (!response.authenticated) {
-        //   window.location.href = '/login'
-        console.log('User is not logged in, redirecting to login page')
-        }
+    getAllUserNotes()
+      .then((notes) => {
+        console.log('Fetched notes:', notes);
+        setNotes(notes);
       })
-      .catch(() => {
-        console.error('Error checking login status')
-        // window.location.href = '/login'
-      })
-  }, [])
-
-  if (isCheckingLogin || !isLoggedIn) {
-    return null
-  }
-
+      .catch((error) => {
+        console.error('Error fetching notes:', error);
+      });
+  },[]);
+  
   return (
     <main>
       <h1>Notes</h1>
-      <NotesList notes={exampleNotes} />
+      <NotesList notes={notes} />
     </main>
   )
 }
