@@ -1,1 +1,44 @@
-@import '../index.css';
+@use './pages/notes';
+@use './pages/login';
+@use './components/notes-list';
+
+:root {
+	font-family: 'DM Sans', 'Segoe UI', sans-serif;
+	color: #26352f;
+	background: #f7f8f5;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	--color-ink: #26352f;
+	--color-muted: #7a8780;
+	--color-accent: #34765b;
+	--color-accent-soft: #e9f1eb;
+	--color-border: #e6eae5;
+	--color-surface: #fff;
+	--shadow-card: 0 14px 35px rgba(38, 53, 47, .055);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	min-width: 320px;
+	min-height: 100vh;
+	margin: 0;
+	background:
+		radial-gradient(ellipse at 80% 0%, rgba(219, 234, 220, .45), transparent 36rem),
+		#f7f8f5;
+}
+
+#root {
+	min-height: 100vh;
+}
+
+h1,
+h2,
+p {
+	margin: 0;
+}

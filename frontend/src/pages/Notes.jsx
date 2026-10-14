@@ -17,8 +17,20 @@ export default function Notes() {
   },[]);
   
   return (
-    <main>
-      <h1>Notes</h1>
+    <main className="notes-page">
+      <header className="notes-page__header">
+        <div>
+          <p className="notes-page__eyebrow">Your space</p>
+          <h1>Notes</h1>
+          <p className="notes-page__description">A calm place for everything on your mind.</p>
+        </div>
+        <span
+          className="notes-page__count"
+          aria-label={`${notes.length} ${notes.length === 1 ? 'note' : 'notes'}`}
+        >
+          {notes.length} {notes.length === 1 ? 'note' : 'notes'}
+        </span>
+      </header>
       <NotesList notes={notes} />
     </main>
   )
