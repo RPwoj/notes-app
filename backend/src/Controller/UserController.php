@@ -45,14 +45,22 @@ final class UserController extends AbstractController
         }
     
         $data = $this->userService->createUser($dto);
+        if (isset($data['error'])) {
+            return $this->json(['error' => $data['error']], 400);
+        }
+        
+        $confirmationToken = $data['confirmationToken'] ?? null;
+        if (!$confirmationToken) {
+            return $this->json(['error' => 'Failed to create user.'], 400);
+        }
 
         $this->emailService->sendEmail(
             $dto->email,
             'Confirm your account',
-            'Please click the following link to confirm your account: <a href="http://notes.local/confirm?token=' . $data['confirmationToken'] . '">Confirm Account</a>'
+            'Please click the following link to confirm your account: <a href="http://notes.local/confirm?token=' . $confirmationToken . '">Confirm Account</a>'
         );
 
-        return new JsonResponse($data); 
+        return new JsonResponse($data);
     }
 
     #[Route('/confirm', methods: ['GET'])]

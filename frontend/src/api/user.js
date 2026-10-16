@@ -5,8 +5,6 @@ export function getStoredToken() {
 }
 
 export async function login(username, password) {
-    console.log('Logging in with username:', username, 'and password:', password)
-
     const response = await fetch('http://notes.local/login', {
         method: 'POST',
         credentials: 'include',
@@ -24,6 +22,35 @@ export async function login(username, password) {
 
     if (data.token) {
         localStorage.setItem(TOKEN_KEY, data.token)
+    }
+
+    return data
+}
+
+export async function register(username, password) {
+    const response = await fetch('http://notes.local/register', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: username, password: password }),
+    })
+
+    const responseBody = await response.text()
+    let data
+
+    try {
+        data = responseBody ? JSON.parse(responseBody) : {}
+    } catch {
+        throw new Error(`Registration failed (HTTP ${response.status})`)
+    }
+
+    if (!response.ok) {
+        const errorMessage = Array.isArray(data.errors)
+            ? data.errors.join(' ')
+            : data.error || data.message || 'Registration failed'
+        throw new Error(errorMessage)
     }
 
     return data
