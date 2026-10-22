@@ -4,6 +4,25 @@ export function getStoredToken() {
     return localStorage.getItem(TOKEN_KEY)
 }
 
+export async function isLoggedIn() {
+    const token = getStoredToken()
+    if (!token) return false
+
+    const response = await fetch('http://notes.local/check-login', {
+        headers: { Authorization: `Bearer ${token}` },
+    })
+
+    if (response.status === 401) {
+        localStorage.removeItem(TOKEN_KEY)
+        return false
+    }
+    if (!response.ok) {
+        throw new Error(`Login check failed (HTTP ${response.status})`)
+    }
+
+    return true
+}
+
 export async function login(username, password) {
     const response = await fetch('http://notes.local/login', {
         method: 'POST',

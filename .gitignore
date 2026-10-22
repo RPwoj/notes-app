@@ -8,6 +8,7 @@ backend/var/
 backend/vendor/
 /backend/.todo
 .todo
+.github/copilot-instructions.md
 
 mysql_data/
 .env.local

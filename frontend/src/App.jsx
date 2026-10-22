@@ -1,8 +1,25 @@
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Notes from './pages/Notes.jsx'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { getStoredToken } from './api/user.js'
+import { isLoggedIn } from './api/user.js'
+
+function AuthRoute({ children, requireLogin }) {
+  const [loggedIn, setLoggedIn] = useState(null)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    isLoggedIn().then(setLoggedIn).catch(setError)
+  }, [])
+
+  if (error) return <p role="alert">{error.message}</p>
+  if (loggedIn === null) return null
+  if (loggedIn !== requireLogin) {
+    return <Navigate to={requireLogin ? '/login' : '/notes'} replace />
+  }
+  return children
+}
 
 function App() {
   return (
@@ -10,11 +27,11 @@ function App() {
       <Routes>
         <Route
           path="/login"
-          element={getStoredToken() ? <Navigate to="/notes" replace /> : <Login />}
+          element={<AuthRoute requireLogin={false}><Login /></AuthRoute>}
         />
         <Route
           path="/notes"
-          element={getStoredToken() ? <Notes /> : <Navigate to="/login" replace />}
+          element={<AuthRoute requireLogin><Notes /></AuthRoute>}
         />
         <Route path="/register" element={<Register />} />
       </Routes>
