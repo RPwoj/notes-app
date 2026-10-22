@@ -2,8 +2,8 @@ function NoteItem({ note }) {
   return (
     <article className="notes-card">
       <div className="notes-card__body">
-        <h2 className="notes-card__title">{note.name}</h2>
-        <p className="notes-card__text">{note.content}</p>
+        <h2 className="notes-card__title">{note.title}</h2>
+        <p className="notes-card__text">{note.excerpt}</p>
       </div>
       <div className="notes-card__actions">
         <span className="notes-card__action notes-card__action--edit">edit</span>
