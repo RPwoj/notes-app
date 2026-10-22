@@ -1,17 +1,40 @@
 import { getStoredToken } from './user.js'
 
 export async function getAllUserNotes() {
-    const token = getStoredToken()
+    const token = getStoredToken();
 
     const data = await fetch('http://notes.local/note', {
         method: 'GET',
-        credentials: 'include',
         headers: {
             Authorization: `Bearer ${token}`
         },
-    })
+    });
 
-    const result = await data.json()
+    const result = await data.json();
 
-    return result
+    return result;
+}
+
+export async function createNote(data) {
+    const token = getStoredToken();
+    console.log('test', data);
+
+    const response = await fetch('http://notes.local/note', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            title: data.title,
+            content: data.content,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to create note');
+    }
+
+    const result = await response.json();
+    return result;
 }

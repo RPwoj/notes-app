@@ -5,6 +5,25 @@
 	margin: 0 auto;
 	padding: 3.5rem 0 5rem;
 
+	.form-container {
+		display: grid;
+		grid-template-rows: 0fr;
+		overflow: hidden;
+		visibility: hidden;
+		transition: grid-template-rows 300ms ease, visibility 0s linear 300ms;
+
+		> * {
+			min-height: 0;
+			overflow: hidden;
+		}
+
+		&--open {
+			grid-template-rows: 1fr;
+			visibility: visible;
+			transition: grid-template-rows 300ms ease, visibility 0s;
+		}
+	}
+
 	&__header {
 		display: flex;
 		align-items: flex-start;

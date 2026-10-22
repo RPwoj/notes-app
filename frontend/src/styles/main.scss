@@ -1,6 +1,7 @@
 @use './pages/notes';
 @use './pages/login';
 @use './pages/register';
+@use './components/note-create-form';
 @use './components/notes-list';
 
 :root {
