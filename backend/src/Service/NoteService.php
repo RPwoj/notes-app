@@ -34,11 +34,9 @@ class NoteService
                 'id' => $note->getId(),
                 'title' => $note->getTitle(),
                 'excerpt' => $note->getExcerpt(),
-                'content' => $note->getContent(),
                 'created' => $note->getCreated(),
                 'edited' => $note->getEdited(),
                 'favorite' => $note->isFavorite(),
-                'owner' => $note->getOwner()->getEmail(),
             ];
         }
 
