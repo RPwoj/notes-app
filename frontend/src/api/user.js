@@ -1,3 +1,5 @@
+import { API_URL } from './config.js'
+
 const TOKEN_KEY = 'auth_token'
 
 export function getStoredToken() {
@@ -8,7 +10,7 @@ export async function isLoggedIn() {
     const token = getStoredToken()
     if (!token) return false
 
-    const response = await fetch('http://notes.local/check-login', {
+    const response = await fetch(`${API_URL}/check-login`, {
         headers: { Authorization: `Bearer ${token}` },
     })
 
@@ -24,7 +26,7 @@ export async function isLoggedIn() {
 }
 
 export async function login(username, password) {
-    const response = await fetch('http://notes.local/login', {
+    const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -47,7 +49,7 @@ export async function login(username, password) {
 }
 
 export async function register(username, password) {
-    const response = await fetch('http://notes.local/register', {
+    const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         credentials: 'include',
         headers: {
