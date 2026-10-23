@@ -1,10 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { login as loginUser } from '../api/user.js'
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -16,7 +14,7 @@ export default function Login() {
     const onSubmit = async (data) => {
         try {
             await loginUser(data.email, data.password);
-            navigate('/notes');
+            window.location.assign('/notes');
         } catch (error) {
             setLoginError('wrong email or password');
         }
