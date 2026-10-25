@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { createNote } from '../api/note.js';
 
-export default function NoteCreateForm(props) {
+export default function NoteFormCreate(props) {
     const { register, handleSubmit, reset } = useForm();
     const [errorMessage, setErrorMessage] = useState('');
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import NotesList from '../components/NotesList.jsx'
-import NoteCreateForm from '../components/NoteCreateForm.jsx'
+import NoteFormCreate from '../components/NoteFormCreate.jsx'
 import { getAllUserNotes } from '../api/note.js'
 
 export default function Notes() {
@@ -55,7 +55,7 @@ export default function Notes() {
         className={`form-container${formVisible ? ' form-container--open' : ''}`}
         aria-hidden={!formVisible}
       >
-        <NoteCreateForm setAddedNote={setAddedNote} />
+        <NoteFormCreate setAddedNote={setAddedNote} />
       </div>
       <NotesList notes={notes} />
     </main>
