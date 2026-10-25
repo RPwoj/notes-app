@@ -20,7 +20,7 @@ export default function NoteFormCreate(props) {
     };
 
     return (
-        <div className="note-create-form">
+        <div className="note-form note-form--create">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <label htmlFor="title">Title</label>
                 <input type="text" id="title" name="title" {...register('title', { required: 'Title is required' })} />
