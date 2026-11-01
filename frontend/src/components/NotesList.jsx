@@ -1,14 +1,29 @@
+import NoteFormEdit from './NoteFormEdit.jsx'
+import { useState } from 'react'
+
 function NoteItem({ note }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [noteTitle, setNoteTitle] = useState(note.title)
+  const [noteExcerpt, setNoteExcerpt] = useState(note.excerpt)
+
   return (
     <article className="notes-card">
       <div className="notes-card__body">
-        <h2 className="notes-card__title">{note.title}</h2>
-        <p className="notes-card__text">{note.excerpt}</p>
+        <h2 className="notes-card__title">{noteTitle}</h2>
+        <p className="notes-card__text">{noteExcerpt}</p>
       </div>
       <div className="notes-card__actions">
-        <span className="notes-card__action notes-card__action--edit">edit</span>
+        <button onClick={
+          () => setIsEditing(true)
+        } className="notes-card__action notes-card__action--edit">edit</button>
         <span className="notes-card__action notes-card__action--delete">delete</span>
       </div>
+      {isEditing && (
+        <div className="edit-form-holder">
+          <button className="notes-card__action notes-card__action--edit" onClick={() => setIsEditing(false)}>close</button >
+          <NoteFormEdit id={note.id} editTitle={setNoteTitle} editExcerpt={setNoteExcerpt} />
+        </div>
+      )}
     </article>
   )
 }

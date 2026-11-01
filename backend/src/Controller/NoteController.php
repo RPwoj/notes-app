@@ -37,13 +37,11 @@ final class NoteController extends AbstractController
         
         if ($result) {
            return $this->json([
-                'data' => [
-                    'title' => $result->getTitle(),
-                    'content' => $result->getContent(),
-                    'created' => $result->getCreated(),
-                    'edited' => $result->getEdited(),
-                    'favorite' => $result->isFavorite(),
-                ],
+                'title' => $result->getTitle(),
+                'content' => $result->getContent(),
+                'created' => $result->getCreated(),
+                'edited' => $result->getEdited(),
+                'favorite' => $result->isFavorite(),
             ]);
         } else {
             return $this->json([
@@ -133,6 +131,11 @@ final class NoteController extends AbstractController
         } elseif ($result instanceof Note) {
             return $this->json([
                 'message' => 'Note updated successfully.',
+                'note' => [
+                    'id' => $result->getId(),
+                    'title' => $result->getTitle(),
+                    'excerpt' => $result->getExcerpt(),
+                ],
             ]);
         }
 
