@@ -1,16 +1,68 @@
 import NoteFormEdit from './NoteFormEdit.jsx'
 import { useState } from 'react'
+import { getNote } from '../api/note.js'
+
+function NoteItemDetails({ noteDetails }) {
+  return (
+    <div className='note-details'>
+      <div className="note-details__content">
+        <p>{noteDetails.content}</p>
+      </div>
+      <div className="note-details__info">
+        <p className="note-details__info--created">Created: {noteDetails?.created?.date?.split('.')[0]}</p>
+        <p className="note-details__info--edited">Edited: {noteDetails?.edited?.date?.split('.')[0]}</p>
+      </div>
+    </div>
+  )
+}
 
 function NoteItem({ note }) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteTitle, setNoteTitle] = useState(note.title)
   const [noteExcerpt, setNoteExcerpt] = useState(note.excerpt)
+  const [details, setDetails] = useState(null);
+  const [detailsVisible, setDetailsVisible] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState('');
+
+  const showDetails = async () => {
+    if (details) {
+      setDetailsVisible(!detailsVisible);
+      return;
+    }
+
+    setDetailsLoading(true);
+    setDetailsError('');
+    try {
+      const noteDetails = await getNote(note.id);
+      setDetails(noteDetails);
+      setDetailsVisible(true);
+    } catch (error) {
+      console.error('Failed to load note details', error);
+      setDetailsError('Unable to load note details. Please try again.');
+    } finally {
+      setDetailsLoading(false);
+    }
+  }
 
   return (
-    <article className="notes-card">
+    <article
+      note-id={note.id}
+      className={`notes-card${details ? ' details-loaded' : ''}${detailsVisible ? ' details-visible' : ''}`}
+    >
       <div className="notes-card__body">
         <h2 className="notes-card__title">{noteTitle}</h2>
         <p className="notes-card__text">{noteExcerpt}</p>
+        {details && <NoteItemDetails noteDetails={details} />}
+        <button
+          className="btn btn--show-details"
+          onClick={showDetails}
+          disabled={detailsLoading}
+          aria-expanded={detailsVisible}
+        >
+          {detailsLoading ? 'Loading...' : detailsVisible ? 'Show less' : detailsError ? 'Try again' : 'Show more'}
+        </button>
+        {detailsError && <p role="alert">{detailsError}</p>}
       </div>
       <div className="notes-card__actions">
         <button onClick={

@@ -63,6 +63,14 @@
 		transform 160ms ease,
 		box-shadow 160ms ease;
 
+	.note-details {
+		display: none;
+	}
+
+	&.details-visible .note-details {
+		display: block;
+	}
+
 	&:hover {
 		transform: translateY(-2px);
 		border-color: #d4e2d7;
