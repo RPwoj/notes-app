@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +22,9 @@ final class UserController extends AbstractController
         private UserService $userService,
         private UserRepository $userRepository,
         private UserPasswordHasherInterface $passwordHasher,
-        private EmailService $emailService
+        private EmailService $emailService,
+        #[Autowire('%env(BACKEND_URL)%')]
+        private string $backendUrl
     ) {
     }
 
@@ -57,7 +60,7 @@ final class UserController extends AbstractController
         $this->emailService->sendEmail(
             $dto->email,
             'Confirm your account',
-            'Please click the following link to confirm your account: <a href="http://notes.local/confirm?token=' . $confirmationToken . '">Confirm Account</a>'
+            'Please click the following link to confirm your account: <a href="' . rtrim($this->backendUrl, '/') . '/confirm?token=' . rawurlencode($confirmationToken) . '">Confirm Account</a>'
         );
 
         return new JsonResponse($data);
