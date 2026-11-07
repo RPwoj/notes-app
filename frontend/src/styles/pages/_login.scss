@@ -23,6 +23,13 @@
 		letter-spacing: -.04rem;
 	}
 
+	.confirmation-message {
+		margin: -1rem 0 1.25rem;
+		color: var(--color-accent);
+		font-size: .9rem;
+		line-height: 1.5;
+	}
+
 	form {
 		display: grid;
 		gap: 1.25rem;

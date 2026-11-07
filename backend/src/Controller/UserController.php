@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -24,7 +25,9 @@ final class UserController extends AbstractController
         private UserPasswordHasherInterface $passwordHasher,
         private EmailService $emailService,
         #[Autowire('%env(BACKEND_URL)%')]
-        private string $backendUrl
+        private string $backendUrl,
+        #[Autowire('%env(FRONTEND_URL)%')]
+        private string $frontendUrl
     ) {
     }
 
@@ -67,7 +70,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/confirm', methods: ['GET'])]
-    public function confirm(Request $request): JsonResponse
+    public function confirm(Request $request): Response
     {
         $token = $request->query->get('token');
 
@@ -80,9 +83,7 @@ final class UserController extends AbstractController
         $result = $this->userService->confirmUser($token);
 
         if ($result['success']) {
-            return $this->json([
-                'message' => 'User confirmed successfully.',
-            ]);
+            return $this->redirect(rtrim($this->frontendUrl, '/') . '/login?confirmed=1');
         } else {
             return $this->json([
                 'error' => $result['message'],

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { isLoggedIn } from './api/user.js'
 
-function AuthRoute({ children, requireLogin }) {
+function AuthRoute({ children, requireLogin, allowLoggedIn = false }) {
   const [loggedIn, setLoggedIn] = useState(null)
   const [error, setError] = useState(null)
 
@@ -15,7 +15,7 @@ function AuthRoute({ children, requireLogin }) {
 
   if (error) return <p role="alert">{error.message}</p>
   if (loggedIn === null) return null
-  if (loggedIn !== requireLogin) {
+  if (loggedIn !== requireLogin && !(allowLoggedIn && loggedIn)) {
     return <Navigate to={requireLogin ? '/login' : '/notes'} replace />
   }
   return children
@@ -27,7 +27,14 @@ function App() {
       <Routes>
         <Route
           path="/login"
-          element={<AuthRoute requireLogin={false}><Login /></AuthRoute>}
+          element={
+            <AuthRoute
+              requireLogin={false}
+              allowLoggedIn={new URLSearchParams(window.location.search).get('confirmed') === '1'}
+            >
+              <Login />
+            </AuthRoute>
+          }
         />
         <Route
           path="/notes"
