@@ -1,6 +1,6 @@
 import NoteFormEdit from './NoteFormEdit.jsx'
 import { useState } from 'react'
-import { getNote } from '../api/note.js'
+import { getNote, deleteNote } from '../api/note.js'
 
 function NoteItemDetails({ noteDetails }) {
   return (
@@ -24,6 +24,8 @@ function NoteItem({ note }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsError, setDetailsError] = useState('');
+  const [targetId, setTargetId] = useState(note.id);
+  const [deleted, setDeleted] = useState(false);
 
   const showDetails = async () => {
     if (details) {
@@ -43,6 +45,22 @@ function NoteItem({ note }) {
     } finally {
       setDetailsLoading(false);
     }
+  } 
+
+  const deletePending = async () => {
+    if (!confirm('Are You sure?')) {
+      return;
+    }
+    deleteTargetNote(targetId);
+  }
+  
+  const deleteTargetNote = async (targetId) => {
+    deleteNote(targetId);
+    setDeleted(true);
+  }
+
+  if (deleted) {
+    return null;
   }
 
   return (
@@ -68,7 +86,7 @@ function NoteItem({ note }) {
         <button onClick={
           () => setIsEditing(true)
         } className="notes-card__action notes-card__action--edit">edit</button>
-        <span className="notes-card__action notes-card__action--delete">delete</span>
+        <button className="notes-card__action notes-card__action--delete" onClick={deletePending}>delete</button>
       </div>
       {isEditing && (
         <div className="edit-form-holder">

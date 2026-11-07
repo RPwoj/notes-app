@@ -73,3 +73,19 @@ export async function updateNote(id, title, content) {
     const result = await response.json();
     return result;
 }
+
+export async function deleteNote(id) {
+    console.log(`delete note: ${id}`);
+    const token = getStoredToken();
+
+    const response = await fetch(`${API_URL}/note/${id}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+    return result;
+}
