@@ -2,8 +2,8 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Notes from './pages/Notes.jsx'
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { isLoggedIn } from './api/user.js'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { isLoggedIn, removeStoredToken } from './api/user.js'
 
 function AuthRoute({ children, requireLogin, allowLoggedIn = false }) {
   const [loggedIn, setLoggedIn] = useState(null)
@@ -19,6 +19,21 @@ function AuthRoute({ children, requireLogin, allowLoggedIn = false }) {
     return <Navigate to={requireLogin ? '/login' : '/notes'} replace />
   }
   return children
+}
+
+const logout = () => {
+  removeStoredToken();
+}
+
+function Logout() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    logout()
+    navigate('/login', { replace: true })
+  }, [navigate])
+
+  return null
 }
 
 function App() {
@@ -41,6 +56,7 @@ function App() {
           element={<AuthRoute requireLogin><Notes /></AuthRoute>}
         />
         <Route path="/register" element={<Register />} />
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </BrowserRouter>
   );

@@ -6,6 +6,10 @@ export function getStoredToken() {
     return localStorage.getItem(TOKEN_KEY)
 }
 
+export function removeStoredToken() {
+    localStorage.removeItem(TOKEN_KEY)
+}
+
 export async function isLoggedIn() {
     const token = getStoredToken()
     if (!token) return false
