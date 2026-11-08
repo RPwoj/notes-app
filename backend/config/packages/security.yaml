@@ -31,7 +31,10 @@ security:
         api:
             pattern:   ^/
             stateless: true
+            entry_point: jwt
             jwt: ~
+            refresh_jwt:
+                check_path: /token/refresh
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall
 
@@ -43,6 +46,7 @@ security:
         - { path: ^/login$, roles: PUBLIC_ACCESS  }
         - { path: ^/register$, roles: PUBLIC_ACCESS  }
         - { path: ^/confirm$, roles: PUBLIC_ACCESS  }
+        - { path: ^/token/refresh$, roles: PUBLIC_ACCESS }
         # uncomment before production
         - { path: ^/mail$, roles: PUBLIC_ACCESS  }
         - { path: ^/check-login$, roles: PUBLIC_ACCESS  }

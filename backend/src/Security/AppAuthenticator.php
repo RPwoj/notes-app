@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,11 +13,13 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 class AppAuthenticator extends AbstractAuthenticator
 {
-    public function __construct(private JWTTokenManagerInterface $jwtManager)
-    {
+    public function __construct(
+        #[Autowire(service: 'lexik_jwt_authentication.handler.authentication_success')]
+        private AuthenticationSuccessHandler $successHandler,
+    ) {
     }
     public function supports(Request $request): ?bool
     {
@@ -44,12 +47,8 @@ class AppAuthenticator extends AbstractAuthenticator
         if ($user->getIsConfirmed() === false) {
             return new JsonResponse(['error' => 'User account is not confirmed.'], Response::HTTP_FORBIDDEN);
         }
-        $jwt = $this->jwtManager->create($user);
-
-        // rw_todo - before production, set secure to true and sameSite to strict
-        return new JsonResponse([
+        return $this->successHandler->handleAuthenticationSuccess($user, null, [
             'message' => 'Logged in',
-            'token' => $jwt,
             'user' => [
                 'email' => $user->getUserIdentifier(),
             ],
