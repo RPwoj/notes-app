@@ -8,6 +8,7 @@ class UserPatchDto
     #[Assert\Email(
         message: 'The email {{ value }} is not a valid email.',
     )]
+    #[Assert\Length(max: 180)]
     public ?string $email;
 
     #[Assert\Length(

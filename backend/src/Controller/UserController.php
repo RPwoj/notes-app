@@ -98,7 +98,7 @@ final class UserController extends AbstractController
         $user = $this->getUser();
 
         if (!$user instanceof UserEntity) {
-            return $this->json(['error' => 'You must be logged in to change your password.'], 401);
+            return $this->json(['error' => 'You must be logged in to update your account.'], 401);
         }
 
         $requestData = json_decode($request->getContent(), true);
@@ -121,10 +121,18 @@ final class UserController extends AbstractController
         $result = $this->userService->editUser($user, $dto);
 
         if (!empty($result['success'])) {
+            if (isset($result['emailConfirmationToken'], $result['pendingEmail'])) {
+                $this->emailService->sendEmail(
+                    $result['pendingEmail'],
+                    'Confirm your new email address',
+                    'Please confirm your new email address by clicking the following link: <a href="' . rtrim($this->backendUrl, '/') . '/confirm?token=' . rawurlencode($result['emailConfirmationToken']) . '">Confirm email address</a>'
+                );
+            }
+
             return $this->json(['message' => $result['message']]);
         }
 
-        return $this->json(['error' => $result['message'] ?? 'Unable to update password.'], 400);
+        return $this->json(['error' => $result['message'] ?? 'Unable to update your account.'], 400);
     }
 
     #[Route('/user', methods: ['DELETE'])]

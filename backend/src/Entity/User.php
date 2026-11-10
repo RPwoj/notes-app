@@ -42,6 +42,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?string $confirmationToken = null;
 
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $pendingEmail = null;
+
     #[ORM\Column(type: 'boolean')]
     private bool $isConfirmed = false;
 
@@ -75,6 +78,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setConfirmationToken(?string $token): static
     {
         $this->confirmationToken = $token;
+
+        return $this;
+    }
+
+    public function getPendingEmail(): ?string
+    {
+        return $this->pendingEmail;
+    }
+
+    public function setPendingEmail(?string $pendingEmail): static
+    {
+        $this->pendingEmail = $pendingEmail;
 
         return $this;
     }
