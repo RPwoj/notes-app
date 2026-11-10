@@ -15,7 +15,7 @@ class UserService
     {
     }
     
-    public function createUser($dto): array
+    public function createUser(object $dto): array
     {
         $userRepository = $this->entityManager->getRepository(User::class);
         $userExists = $userRepository->findOneBy(['email' => $dto->email]);
@@ -72,6 +72,42 @@ class UserService
         return [
             'success' => true,
             'message' => 'User confirmed successfully.'
+        ];
+    }
+
+    public function editUser(?User $user, object $dto): array
+    {
+        if (!$user) {
+            return [
+                'success' => false,
+                'message' => 'You must be logged in to change your password.'
+            ];
+        }
+
+        if (!$dto) {
+            return [
+                'success' => false,
+                'message' => 'Password data is missing.'
+            ];
+        }
+
+        if ($dto->password && $dto->password && $dto->password === $dto->passwordRepeated) {
+            $hashedPassword = $this->passwordHasher->hashPassword(
+                $user,
+                $dto->password
+            );
+            $user->setPassword($hashedPassword);
+            $this->entityManager->flush();
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Passwords do not match.'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Password updated successfully.'
         ];
     }
 

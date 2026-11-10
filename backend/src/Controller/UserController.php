@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Dto\UserPostDto;
+use App\Dto\UserPatchDto;
 use App\Repository\UserRepository;
 use App\Service\UserService;
 use App\Service\EmailService;
@@ -89,6 +90,41 @@ final class UserController extends AbstractController
                 'error' => $result['message'],
             ], 400);
         }
+    }
+
+    #[Route('/edit-user', methods: ['PATCH'])]
+    public function editProfile(Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof UserEntity) {
+            return $this->json(['error' => 'You must be logged in to change your password.'], 401);
+        }
+
+        $requestData = json_decode($request->getContent(), true);
+        $dto = new UserPatchDto();
+        $dto->email = $requestData['email'] ?? null;
+        $dto->password = $requestData['password'] ?? null;
+        $dto->passwordRepeated = $requestData['password-repeated'] ?? null;
+
+        $errors = $this->validator->validate($dto);
+        $errorsArray = [];
+        
+        if (count($errors) > 0) {
+            foreach($errors as $error) {
+                $errorsArray[] = $error->getMessage();
+            }
+
+            return $this->json(['errors' => $errorsArray], 400);
+        }
+
+        $result = $this->userService->editUser($user, $dto);
+
+        if (!empty($result['success'])) {
+            return $this->json(['message' => $result['message']]);
+        }
+
+        return $this->json(['error' => $result['message'] ?? 'Unable to update password.'], 400);
     }
 
     #[Route('/user', methods: ['DELETE'])]
