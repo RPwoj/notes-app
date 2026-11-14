@@ -14,6 +14,13 @@ class UserService
     )
     {
     }
+
+    public function getUserData(User $user): array
+    {
+        return [
+            'email' => $user->getEmail(),
+        ];
+    }
     
     public function createUser(object $dto): array
     {

@@ -32,6 +32,19 @@ final class UserController extends AbstractController
     ) {
     }
 
+    #[Route('/current-user', methods: ['GET'])]
+    public function getUserData(): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof UserEntity) {
+            return $this->json(['error' => 'You must be logged in to update your account.'], 401);
+        }
+
+        $userData = $this->userService->getUserData($user);
+
+        return new JsonResponse($userData);
+    }
+
     #[Route('/register', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {

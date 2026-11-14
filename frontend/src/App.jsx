@@ -1,6 +1,7 @@
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Notes from './pages/Notes.jsx'
+import MyAccount from './pages/MyAccount.jsx'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { isLoggedIn, removeStoredToken } from './api/user.js'
@@ -55,6 +56,7 @@ function App() {
           path="/notes"
           element={<AuthRoute requireLogin><Notes /></AuthRoute>}
         />
+        <Route path="/my-account" element={<AuthRoute requireLogin><MyAccount /></AuthRoute>} />
         <Route path="/register" element={<Register />} />
         <Route path="/logout" element={<Logout />} />
       </Routes>

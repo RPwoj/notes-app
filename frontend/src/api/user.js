@@ -80,3 +80,41 @@ export async function register(username, password) {
 
     return data
 }
+
+export async function getUserData() {
+    const token = getStoredToken()
+    const response = await fetch(`${API_URL}/current-user`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    const result = await response.json()
+
+    if (!response.ok) {
+        throw new Error(result.error || result.message || 'Unable to load account details.')
+    }
+
+    return result
+}
+
+export async function updateUser(data) {
+    const response = await fetch(`${API_URL}/edit-user`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getStoredToken()}`,
+        },
+        body: JSON.stringify(data),
+    })
+    const result = await response.json()
+
+    if (!response.ok) {
+        const errorMessage = Array.isArray(result.errors)
+            ? result.errors.join(' ')
+            : result.error || result.message || 'Unable to update your account.'
+        throw new Error(errorMessage)
+    }
+
+    return result
+}
