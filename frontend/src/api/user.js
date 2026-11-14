@@ -118,3 +118,19 @@ export async function updateUser(data) {
 
     return result
 }
+
+export async function deleteUser() {
+    const response = await fetch(`${API_URL}/user`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${getStoredToken()}`,
+        },
+    })
+    const result = await response.json()
+
+    if (!response.ok) {
+        throw new Error(result.error || result.message || 'Unable to delete your account.')
+    }
+
+    return result
+}

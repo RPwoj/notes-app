@@ -1,14 +1,18 @@
 import { useForm } from 'react-hook-form';
-import { getUserData, updateUser } from '../api/user.js';
+import { deleteUser, getUserData, removeStoredToken, updateUser } from '../api/user.js';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyAccount() {
+    const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
     const [loadError, setLoadError] = useState('');
     const [emailMessage, setEmailMessage] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordMessage, setPasswordMessage] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [deleteError, setDeleteError] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
     const {
         register: registerEmail,
         handleSubmit: handleEmailSubmit,
@@ -53,6 +57,24 @@ export default function MyAccount() {
             resetPasswordForm();
         } catch (error) {
             setPasswordError(error.message);
+        }
+    };
+
+    const onDeleteAccount = async () => {
+        if (!window.confirm('Are you sure you want to permanently delete your account?')) {
+            return;
+        }
+
+        setDeleteError('');
+        setIsDeleting(true);
+
+        try {
+            await deleteUser();
+            removeStoredToken();
+            navigate('/login', { replace: true });
+        } catch (error) {
+            setDeleteError(error.message);
+            setIsDeleting(false);
         }
     };
 
@@ -129,6 +151,20 @@ export default function MyAccount() {
                                 {isPasswordSubmitting ? 'Updating...' : 'Update password'}
                             </button>
                         </form>
+
+                        <section className="account-danger-zone" aria-labelledby="delete-account-heading">
+                            <h3 id="delete-account-heading">Delete account</h3>
+                            <p>This permanently deletes your account.</p>
+                            {deleteError && <p className="error-message" role="alert">{deleteError}</p>}
+                            <button
+                                type="button"
+                                className="delete-account-button"
+                                onClick={onDeleteAccount}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? 'Deleting...' : 'Delete account'}
+                            </button>
+                        </section>
                     </>
                 )}
             </section>

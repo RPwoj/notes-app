@@ -65,7 +65,7 @@
 		}
 	}
 
-	.account-form {
+	&.account-form {
 		width: min(100%, 560px);
 
 		h3 {
@@ -79,6 +79,29 @@
 			margin-top: .5rem;
 			padding-top: 1.5rem;
 			border-top: 1px solid var(--color-border);
+		}
+	}
+
+	.account-danger-zone {
+		display: grid;
+		gap: 1.25rem;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--color-border);
+
+		h3 {
+			margin: 0;
+			color: var(--color-ink);
+			font-size: 1.1rem;
+			font-weight: 600;
+		}
+	}
+
+	.delete-account-button {
+		background: #b0443d;
+
+		&:hover {
+			background: #8e342f;
 		}
 	}
 

@@ -30,7 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Note>
      */
-    #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'owner')]
+    #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'owner', cascade: ['remove'])]
     private Collection $notes;
 
     /**
